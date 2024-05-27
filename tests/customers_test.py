@@ -1,4 +1,5 @@
 """Customers endpoint tests"""
+
 from datetime import datetime
 from random import randint
 
@@ -21,10 +22,7 @@ class TestCustomers:
     tax_system = TaxSystem.SIN_OBLIGACIONES_FISCALES
     zip_code = f"0300{randint(0, 9)}"
     customer = api.customers.create(
-        customer_name,
-        customer_tax_id,
-        tax_system,
-        zip_code,
+        customer_name, customer_tax_id, tax_system, zip_code
     )
 
     def test_create_customer(self):
@@ -71,7 +69,7 @@ class TestCustomers:
         # Check if all the customers in result where created in date range
         assert all(c.created_at >= last_year and c.created_at <= today for c in result)
 
-    @pytest.mark.skipif(not customer, reason="Customer creaton failed")
+    @pytest.mark.depends("test_create_customer")
     def test_retrieve_one_customer(self):
         """Test to retrieve one customer from the API"""
         result = self.api.customers.retrieve(self.customer.id)
@@ -79,7 +77,7 @@ class TestCustomers:
         # Check if the retrieved customer is correct
         assert result.id == self.customer.id
 
-    @pytest.mark.skipif(not customer, reason="Customer creaton failed")
+    @pytest.mark.depends("test_create_customer")
     def test_update_client(self):
         """Test to update a specific client from the API"""
         email = "user@example.com"
@@ -97,7 +95,7 @@ class TestCustomers:
         ]
         assert all(assertions)
 
-    @pytest.mark.skipif(not customer, reason="Customer creaton failed")
+    @pytest.mark.depends("test_create_customer")
     def test_delete_customer(self):
         """Test to delete a specific client from the API"""
         result = self.api.customers.delete(self.customer.id)

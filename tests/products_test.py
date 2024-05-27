@@ -1,4 +1,5 @@
 """Products endpoint tests"""
+
 import random
 import string
 
@@ -31,6 +32,7 @@ class TestProducts:
         # Check if all the items are Product instances
         assert all(isinstance(product, Product) for product in products)
 
+    @pytest.mark.depends("test_create_product")
     def test_search_products(self):
         """Test product search"""
         products = self.api.products.all(search=self.product.description)
@@ -38,7 +40,7 @@ class TestProducts:
         # Check if "Product 1" is in the result
         assert self.product.description in [product.description for product in products]
 
-    @pytest.mark.skipif(not product, reason="Product creation failed")
+    @pytest.mark.depends("test_create_product")
     def test_retrieve_one_product(self):
         """Test get a product"""
         product = self.api.products.retrieve(self.product.id)
@@ -46,7 +48,7 @@ class TestProducts:
         # Check if the result is a Product instance
         assert isinstance(product, Product)
 
-    @pytest.mark.skipif(not product, reason="Product creation failed")
+    @pytest.mark.depends("test_create_product")
     def test_update_product(self):
         """Test product update"""
         description = "A new product"
@@ -65,7 +67,7 @@ class TestProducts:
         ]
         assert all(assertions)
 
-    @pytest.mark.skipif(not product, reason="Product creation failed")
+    @pytest.mark.depends("test_create_product")
     def test_delete_product(self):
         """Test product deletion"""
         product = self.api.products.delete(self.product.id)
