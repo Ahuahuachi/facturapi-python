@@ -3,6 +3,7 @@ from datetime import datetime
 from random import randint
 
 import pytest
+import pytz
 from dateutil.relativedelta import relativedelta
 from settings import API_KEY
 
@@ -63,9 +64,9 @@ class TestCustomers:
 
     def test_search_customers_by_date(self):
         """Test for customer search by date"""
-        today = datetime.now()
+        today = datetime.now(pytz.UTC)
         last_year = today - relativedelta(years=1)
-        result = self.api.customers.all(start_date=last_year, end_date=today)
+        result = self.api.customers.all(start_date=last_year, end_date=today).data
 
         # Check if all the customers in result where created in date range
         assert all(c.created_at >= last_year and c.created_at <= today for c in result)
